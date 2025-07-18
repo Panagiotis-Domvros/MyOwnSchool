@@ -87,13 +87,19 @@ function initializeAppLogic() {
     const exportPdfButton = document.getElementById('export-pdf');
 
     async function loadStudentsFromFirestore() {
-        const q = query(collection(db, "students"), orderBy("name"));
-        const querySnapshot = await getDocs(q);
-        students = [];
-        querySnapshot.forEach((doc) => {
-            students.push({ id: doc.id, ...doc.data() });
-        });
-        updateStudentListView();
+        try {
+            const q = query(collection(db, "students"), orderBy("name"));
+            const querySnapshot = await getDocs(q);
+            students = [];
+            querySnapshot.forEach((doc) => {
+                students.push({ id: doc.id, ...doc.data() });
+            });
+            updateStudentListView();
+            console.log("Οι μαθητές φορτώθηκαν επιτυχώς.");
+        } catch (error) {
+            console.error("Σφάλμα κατά τη φόρτωση των μαθητών από το Firestore:", error);
+            studentListDiv.innerHTML = '<p style="color: red;">Σφάλμα φόρτωσης δεδομένων. Ελέγξτε την κονσόλα (F12).</p>';
+        }
     }
 
     studentForm.addEventListener('submit', async function(e) {
@@ -184,16 +190,29 @@ function initializeAppLogic() {
         studentListDiv.innerHTML = '';
         const lastNameFilter = searchLastname.value.toLowerCase().trim();
         const classFilter = searchClass.value.toLowerCase().trim();
+        
         const filteredStudents = students.filter(student => {
-            if (!student.name) return false;
+            // --- **Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ** ---
+            // Ελέγχουμε αν η εγγραφή του μαθητή είναι έγκυρη πριν προσπαθήσουμε να την επεξεργαστούμε.
+            // Αν δεν υπάρχει όνομα (name), απλώς αγνοούμε αυτή την εγγραφή.
+            if (typeof student.name !== 'string' || student.name.trim() === '') {
+                console.warn("Βρέθηκε μαθητής χωρίς όνομα, αγνοείται:", student.id);
+                return false;
+            }
+            // --- **ΤΕΛΟΣ ΔΙΟΡΘΩΣΗΣ** ---
+
             const lastName = student.name.split(' ').pop().toLowerCase();
             const studentClass = student.class ? student.class.toLowerCase() : '';
-            return (!lastNameFilter || lastName.startsWith(lastNameFilter)) && (!classFilter || studentClass.startsWith(classFilter));
+            const matchesLastname = !lastNameFilter || lastName.startsWith(lastNameFilter);
+            const matchesClass = !classFilter || studentClass.startsWith(classFilter);
+            return matchesLastname && matchesClass;
         });
+
         if (filteredStudents.length === 0) {
             studentListDiv.innerHTML = '<p>Δεν βρέθηκαν μαθητές/τριες.</p>';
             return;
         }
+
         filteredStudents.forEach(student => {
             const studentDiv = document.createElement('div');
             studentDiv.classList.add('student-item');
