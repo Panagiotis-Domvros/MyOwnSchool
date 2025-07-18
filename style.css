@@ -8,6 +8,8 @@
     --text-color: #333;
     --border-color: #ddd;
     --error-color: #d9534f;
+    --delete-color: #d9534f;
+    --dark-delete: #c9302c;
 }
 
 /* Βασικά Στυλ */
@@ -71,7 +73,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Για καλύτερη εμφάνιση σε μικρές οθόνες */
+    flex-wrap: wrap;
 }
 
 header h1 {
@@ -83,7 +85,7 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-top: 10px; /* Προσθήκη για mobile */
+    margin-top: 10px;
 }
 
 #logout-button {
@@ -163,6 +165,20 @@ button {
 
 button:hover {
     background-color: var(--dark-teal);
+}
+
+/* Στυλ για κουμπιά διαγραφής */
+.delete-button {
+    background-color: var(--delete-color);
+    margin-top: 10px;
+}
+
+.delete-button:hover {
+    background-color: var(--dark-delete);
+}
+
+.form-actions {
+    margin-top: 20px;
 }
 
 /* Λίστα Μαθητών & Αναζήτηση */

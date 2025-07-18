@@ -1,7 +1,7 @@
 // --- ΕΙΣΑΓΩΓΗ ΛΕΙΤΟΥΡΓΙΩΝ FIREBASE ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { 
-    getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, orderBy, arrayUnion 
+    getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, orderBy, arrayUnion, arrayRemove, deleteDoc 
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { 
     getAuth, 
@@ -78,9 +78,13 @@ function initializeAppLogic() {
     const observationsForm = document.getElementById('observations-form');
     const studentListDiv = document.getElementById('student-list');
     const observationStudentName = document.getElementById('observation-student-name');
-    const searchLastname = document.getElementById('search-lastname'); // Το πεδίο αναζήτησης ονόματος
+    const searchLastname = document.getElementById('search-lastname');
     const searchClass = document.getElementById('search-class');
     const exportPdfButton = document.getElementById('export-pdf');
+    const deleteStudentButton = document.getElementById('delete-student');
+    const deleteTestButton = document.getElementById('delete-test');
+    const deleteOralButton = document.getElementById('delete-oral');
+    const deleteObservationButton = document.getElementById('delete-observation');
 
     async function loadStudentsFromFirestore() {
         try {
@@ -133,7 +137,6 @@ function initializeAppLogic() {
         }
     });
 
-    // Οι υπόλοιπες φόρμες παραμένουν ίδιες...
     testForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!selectedStudentId) { alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.'); return; }
@@ -172,18 +175,116 @@ function initializeAppLogic() {
         } catch (error) { console.error("Σφάλμα: ", error); }
     });
 
+    // Συναρτήσεις διαγραφής
+    deleteStudentButton.addEventListener('click', async function() {
+        if (!selectedStudentId) {
+            alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.');
+            return;
+        }
+        
+        if (confirm('Είστε σίγουρος ότι θέλετε να διαγράψετε αυτόν τον/τη μαθητή/τρια; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.')) {
+            try {
+                await deleteDoc(doc(db, "students", selectedStudentId));
+                alert('Ο μαθητής/τρια διαγράφηκε επιτυχώς.');
+                selectedStudentId = null;
+                studentForm.reset();
+                observationsForm.reset();
+                await loadStudentsFromFirestore();
+            } catch (error) {
+                console.error("Σφάλμα κατά τη διαγραφή:", error);
+                alert("Παρουσιάστηκε σφάλμα κατά τη διαγραφή.");
+            }
+        }
+    });
+
+    deleteTestButton.addEventListener('click', async function() {
+        if (!selectedStudentId) {
+            alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.');
+            return;
+        }
+        
+        const student = students.find(s => s.id === selectedStudentId);
+        if (!student || !student.writtenTests || student.writtenTests.length === 0) {
+            alert('Δεν υπάρχουν γραπτές δοκιμασίες για διαγραφή.');
+            return;
+        }
+        
+        if (confirm('Είστε σίγουρος ότι θέλετε να διαγράψετε την τελευταία γραπτή δοκιμασία;')) {
+            try {
+                const lastTest = student.writtenTests[student.writtenTests.length - 1];
+                const studentDocRef = doc(db, "students", selectedStudentId);
+                await updateDoc(studentDocRef, { writtenTests: arrayRemove(lastTest) });
+                alert('Η γραπτή δοκιμασία διαγράφηκε επιτυχώς.');
+                await loadStudentsFromFirestore();
+            } catch (error) {
+                console.error("Σφάλμα κατά τη διαγραφή:", error);
+                alert("Παρουσιάστηκε σφάλμα κατά τη διαγραφή.");
+            }
+        }
+    });
+
+    deleteOralButton.addEventListener('click', async function() {
+        if (!selectedStudentId) {
+            alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.');
+            return;
+        }
+        
+        const student = students.find(s => s.id === selectedStudentId);
+        if (!student || !student.oralExams || student.oralExams.length === 0) {
+            alert('Δεν υπάρχουν προφορικές εξετάσεις για διαγραφή.');
+            return;
+        }
+        
+        if (confirm('Είστε σίγουρος ότι θέλετε να διαγράψετε την τελευταία προφορική εξέταση;')) {
+            try {
+                const lastOral = student.oralExams[student.oralExams.length - 1];
+                const studentDocRef = doc(db, "students", selectedStudentId);
+                await updateDoc(studentDocRef, { oralExams: arrayRemove(lastOral) });
+                alert('Η προφορική εξέταση διαγράφηκε επιτυχώς.');
+                await loadStudentsFromFirestore();
+            } catch (error) {
+                console.error("Σφάλμα κατά τη διαγραφή:", error);
+                alert("Παρουσιάστηκε σφάλμα κατά τη διαγραφή.");
+            }
+        }
+    });
+
+    deleteObservationButton.addEventListener('click', async function() {
+        if (!selectedStudentId) {
+            alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.');
+            return;
+        }
+        
+        const student = students.find(s => s.id === selectedStudentId);
+        if (!student || !student.observations || student.observations.trim() === '') {
+            alert('Δεν υπάρχουν παρατηρήσεις για διαγραφή.');
+            return;
+        }
+        
+        if (confirm('Είστε σίγουρος ότι θέλετε να διαγράψετε τις παρατηρήσεις;')) {
+            try {
+                const studentDocRef = doc(db, "students", selectedStudentId);
+                await updateDoc(studentDocRef, { observations: '' });
+                document.getElementById('observations-text').value = '';
+                alert('Οι παρατηρήσεις διαγράφηκαν επιτυχώς.');
+                await loadStudentsFromFirestore();
+            } catch (error) {
+                console.error("Σφάλμα κατά τη διαγραφή:", error);
+                alert("Παρουσιάστηκε σφάλμα κατά τη διαγραφή.");
+            }
+        }
+    });
+
     searchLastname.addEventListener('input', updateStudentListView);
     searchClass.addEventListener('input', updateStudentListView);
     exportPdfButton.addEventListener('click', exportToPDF);
 
     function updateStudentListView() {
         studentListDiv.innerHTML = '';
-        // --- **Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ** ---
-        const nameFilter = searchLastname.value.toLowerCase().trim(); // Το κείμενο αναζήτησης για το όνομα
+        const nameFilter = searchLastname.value.toLowerCase().trim();
         const classFilter = searchClass.value.toLowerCase().trim();
         
         const filteredStudents = students.filter(student => {
-            // Έλεγχος για έγκυρη εγγραφή
             if (typeof student.name !== 'string' || student.name.trim() === '') {
                 return false;
             }
@@ -191,14 +292,11 @@ function initializeAppLogic() {
             const studentFullName = student.name.toLowerCase();
             const studentClass = student.class ? student.class.toLowerCase() : '';
 
-            // Ελέγχουμε αν το πλήρες όνομα του μαθητή ΠΕΡΙΕΧΕΙ το κείμενο αναζήτησης
             const matchesName = !nameFilter || studentFullName.includes(nameFilter);
-            // Ελέγχουμε αν το τμήμα του μαθητή ξεκινάει με το κείμενο αναζήτησης
             const matchesClass = !classFilter || studentClass.startsWith(classFilter);
             
             return matchesName && matchesClass;
         });
-        // --- **ΤΕΛΟΣ ΔΙΟΡΘΩΣΗΣ** ---
 
         if (filteredStudents.length === 0) {
             studentListDiv.innerHTML = '<p>Δεν βρέθηκαν μαθητές/τριες.</p>';
@@ -230,7 +328,6 @@ function initializeAppLogic() {
             document.getElementById('observations-text').value = student.observations || '';
             testForm.reset();
             oralExamForm.reset();
-            alert(`Επιλέχθηκε: ${student.name}.`);
         }
         updateStudentListView();
     }

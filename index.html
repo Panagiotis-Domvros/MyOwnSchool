@@ -61,7 +61,10 @@
                         <label for="subject">Μάθημα:</label>
                         <input type="text" id="subject" name="subject">
                     </div>
-                    <button type="submit">Καταχώριση Μαθητή/τριας</button>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Μαθητή/τριας</button>
+                        <button type="button" id="delete-student" class="delete-button">Διαγραφή Μαθητή/τριας</button>
+                    </div>
                 </form>
             </section>
 
@@ -84,7 +87,10 @@
                         <label for="test-grade">Βαθμός:</label>
                         <input type="text" id="test-grade" name="test-grade">
                     </div>
-                    <button type="submit">Καταχώριση Δοκιμασίας</button>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Δοκιμασίας</button>
+                        <button type="button" id="delete-test" class="delete-button">Διαγραφή Τελευταίας Δοκιμασίας</button>
+                    </div>
                 </form>
             </section>
 
@@ -100,7 +106,10 @@
                         <label for="oral-comment">Σχόλιο:</label>
                         <textarea id="oral-comment" name="oral-comment" rows="3"></textarea>
                     </div>
-                    <button type="submit">Καταχώριση Εξέτασης</button>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Εξέτασης</button>
+                        <button type="button" id="delete-oral" class="delete-button">Διαγραφή Τελευταίας Εξέτασης</button>
+                    </div>
                 </form>
             </section>
 
@@ -116,7 +125,10 @@
                         <label for="observations-text">Παρατηρήσεις:</label>
                         <textarea id="observations-text" name="observations-text" rows="4"></textarea>
                     </div>
-                    <button type="submit">Καταχώριση Παρατήρησης</button>
+                    <div class="form-actions">
+                        <button type="submit">Καταχώριση Παρατήρησης</button>
+                        <button type="button" id="delete-observation" class="delete-button">Διαγραφή Παρατηρήσεων</button>
+                    </div>
                 </form>
             </section>
 
@@ -141,7 +153,6 @@
         <div class="export-container">
              <button id="export-pdf">Εξαγωγή Καρτέλας σε PDF</button>
         </div>
-
 
         <footer>
             <p>Δημιουργία: Παναγιώτης Δόμβρος - Διευθυντής 1ου Γυμνασίου Πυλαίας, All rights reserved 2025-26</p>
