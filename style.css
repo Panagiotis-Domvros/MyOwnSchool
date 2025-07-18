@@ -1,0 +1,230 @@
+/* Χρωματική Παλέτα */
+:root {
+    --off-white: #f8f8f8;
+    --teal: #008080; /* Teal */
+    --dark-teal: #006060;
+    --gold: #ffd700; /* Gold */
+    --dark-gold: #cca300;
+    --text-color: #333;
+    --border-color: #ddd;
+    --error-color: #d9534f;
+}
+
+/* Βασικά Στυλ */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--off-white);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* --- ΣΤΥΛ ΓΙΑ ΤΗ ΣΥΝΔΕΣΗ --- */
+#login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--teal);
+}
+
+#login-box {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+#login-box h2 {
+    color: var(--dark-teal);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: var(--error-color);
+    margin-top: 15px;
+    font-size: 0.9em;
+    min-height: 1.2em;
+}
+
+
+/* --- ΣΤΥΛ ΚΥΡΙΑΣ ΕΦΑΡΜΟΓΗΣ --- */
+#app-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+header {
+    background-color: var(--teal);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Για καλύτερη εμφάνιση σε μικρές οθόνες */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px; /* Προσθήκη για mobile */
+}
+
+#logout-button {
+    background-color: var(--gold);
+    color: var(--text-color);
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+#logout-button:hover {
+    background-color: var(--dark-gold);
+}
+
+
+main {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.data-section {
+    background-color: var(--off-white);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.data-section h2 {
+    color: var(--dark-teal);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* Στυλ Φορμών */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background-color: var(--teal);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: var(--dark-teal);
+}
+
+/* Λίστα Μαθητών & Αναζήτηση */
+#search-section input {
+    margin-bottom: 10px;
+}
+
+#student-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.student-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.student-item:last-child {
+    border-bottom: none;
+}
+
+.student-item:hover, .student-item.selected {
+    background-color: var(--gold);
+    color: var(--text-color);
+}
+
+/* Ενότητα Παρατηρήσεων */
+#observation-student-name {
+    font-style: italic;
+    color: var(--dark-teal);
+    font-weight: bold;
+    background-color: #e9e9e9;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Κουμπί Εξαγωγής */
+.export-container {
+    text-align: center;
+    padding: 20px;
+}
+
+#export-pdf {
+    background-color: var(--gold);
+    color: var(--text-color);
+    font-weight: bold;
+    width: auto;
+}
+
+#export-pdf:hover {
+    background-color: var(--dark-gold);
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: var(--off-white);
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9em;
+}

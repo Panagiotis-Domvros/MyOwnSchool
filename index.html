@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Παρακολούθηση Προόδου</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Βιβλιοθήκες για την Εξαγωγή σε PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Οθόνη Σύνδεσης (Εμφανίζεται αρχικά) -->
+    <div id="login-container">
+        <div id="login-box">
+            <h2>Σύνδεση στην Εφαρμογή</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Κωδικός Πρόσβασης:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Σύνδεση</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Κύρια Εφαρμογή (Κρυμμένη αρχικά) -->
+    <div id="app-container" style="display: none;">
+        <header>
+            <h1>Παρακολούθηση Προόδου</h1>
+            <div id="user-info">
+                <span id="user-email"></span>
+                <button id="logout-button">Αποσύνδεση</button>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- Ενότητα Στοιχείων Μαθητών/τριών -->
+            <section id="student-details" class="data-section">
+                <h2>Στοιχεία Μαθητών/τριών</h2>
+                <form id="student-form">
+                    <div class="form-group">
+                        <label for="student-name">Ονοματεπώνυμο:</label>
+                        <input type="text" id="student-name" name="student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="father-name">Πατρώνυμο:</label>
+                        <input type="text" id="father-name" name="father-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="class-section">Τμήμα:</label>
+                        <input type="text" id="class-section" name="class-section" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="subject">Μάθημα:</label>
+                        <input type="text" id="subject" name="subject">
+                    </div>
+                    <button type="submit">Καταχώριση Μαθητή/τριας</button>
+                </form>
+            </section>
+
+            <!-- Ενότητα Γραπτών Δοκιμασιών -->
+            <section id="written-tests" class="data-section">
+                <h2>Γραπτές Δοκιμασίες</h2>
+                <form id="test-form">
+                    <div class="form-group">
+                        <label for="test-type">Γραπτή Δοκιμασία:</label>
+                        <select id="test-type" name="test-type">
+                            <option value="Σύντομη">Σύντομη</option>
+                            <option value="Ωριαία">Ωριαία</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-date">Ημερομηνία:</label>
+                        <input type="date" id="test-date" name="test-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="test-grade">Βαθμός:</label>
+                        <input type="text" id="test-grade" name="test-grade">
+                    </div>
+                    <button type="submit">Καταχώριση Δοκιμασίας</button>
+                </form>
+            </section>
+
+            <!-- Ενότητα Προφορικής Εξέτασης -->
+            <section id="oral-exams" class="data-section">
+                <h2>Προφορική Εξέταση</h2>
+                <form id="oral-exam-form">
+                     <div class="form-group">
+                        <label for="oral-date">Ημερομηνία:</label>
+                        <input type="date" id="oral-date" name="oral-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="oral-comment">Σχόλιο:</label>
+                        <textarea id="oral-comment" name="oral-comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit">Καταχώριση Εξέτασης</button>
+                </form>
+            </section>
+
+            <!-- Ενότητα Γενικών Παρατηρήσεων -->
+            <section id="general-observations" class="data-section">
+                <h2>Γενικές Παρατηρήσεις</h2>
+                <form id="observations-form">
+                    <div class="form-group">
+                        <label>Ονοματεπώνυμο:</label>
+                        <p id="observation-student-name"><i>(Επιλέξτε μαθητή/τρια από τη λίστα)</i></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="observations-text">Παρατηρήσεις:</label>
+                        <textarea id="observations-text" name="observations-text" rows="4"></textarea>
+                    </div>
+                    <button type="submit">Καταχώριση Παρατήρησης</button>
+                </form>
+            </section>
+
+            <!-- Ενότητα Αναζήτησης και Λίστας Μαθητών/τριών -->
+            <section id="search-section" class="data-section">
+                <h2>Αναζήτηση Μαθητή/τριας</h2>
+                 <div class="form-group">
+                    <label for="search-lastname">Αναζήτηση (Επίθετο):</label>
+                    <input type="text" id="search-lastname" placeholder="Εισάγετε επίθετο...">
+                </div>
+                 <div class="form-group">
+                    <label for="search-class">Αναζήτηση (Τμήμα):</label>
+                    <input type="text" id="search-class" placeholder="Εισάγετε τμήμα...">
+                </div>
+                <h3>Λίστα Μαθητών/τριών</h3>
+                <div id="student-list">
+                    <!-- Οι μαθητές/τριες θα προστεθούν εδώ με JavaScript -->
+                </div>
+            </section>
+        </main>
+        
+        <div class="export-container">
+             <button id="export-pdf">Εξαγωγή Καρτέλας σε PDF</button>
+        </div>
+
+
+        <footer>
+            <p>Δημιουργία: Παναγιώτης Δόμβρος - Διευθυντής 1ου Γυμνασίου Πυλαίας, All rights reserved 2025-26</p>
+        </footer>
+    </div>
+
+    <!-- Το script.js φορτώνεται ως module για να μπορεί να κάνει import τις λειτουργίες του Firebase -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
