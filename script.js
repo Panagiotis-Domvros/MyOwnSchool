@@ -37,15 +37,11 @@ const userEmailSpan = document.getElementById('user-email');
 // --- ΚΥΡΙΟΣ ΕΛΕΓΧΟΣ ΚΑΤΑΣΤΑΣΗΣ ΣΥΝΔΕΣΗΣ ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // Ο χρήστης είναι συνδεδεμένος
         loginContainer.style.display = 'none';
         appContainer.style.display = 'block';
         userEmailSpan.textContent = user.email;
-        
-        // Φορτώνουμε τα δεδομένα της εφαρμογής ΜΟΝΟ ΑΦΟΥ συνδεθεί ο χρήστης
         initializeAppLogic(); 
     } else {
-        // Ο χρήστης είναι αποσυνδεδεμένος
         loginContainer.style.display = 'flex';
         appContainer.style.display = 'none';
     }
@@ -82,7 +78,7 @@ function initializeAppLogic() {
     const observationsForm = document.getElementById('observations-form');
     const studentListDiv = document.getElementById('student-list');
     const observationStudentName = document.getElementById('observation-student-name');
-    const searchLastname = document.getElementById('search-lastname');
+    const searchLastname = document.getElementById('search-lastname'); // Το πεδίο αναζήτησης ονόματος
     const searchClass = document.getElementById('search-class');
     const exportPdfButton = document.getElementById('export-pdf');
 
@@ -137,14 +133,11 @@ function initializeAppLogic() {
         }
     });
 
+    // Οι υπόλοιπες φόρμες παραμένουν ίδιες...
     testForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!selectedStudentId) { alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.'); return; }
-        const newTest = {
-            type: document.getElementById('test-type').value,
-            date: document.getElementById('test-date').value,
-            grade: document.getElementById('test-grade').value
-        };
+        const newTest = { type: document.getElementById('test-type').value, date: document.getElementById('test-date').value, grade: document.getElementById('test-grade').value };
         try {
             const studentDocRef = doc(db, "students", selectedStudentId);
             await updateDoc(studentDocRef, { writtenTests: arrayUnion(newTest) });
@@ -157,10 +150,7 @@ function initializeAppLogic() {
     oralExamForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!selectedStudentId) { alert('Παρακαλώ επιλέξτε έναν/μια μαθητή/τρια πρώτα.'); return; }
-        const newOralExam = {
-            date: document.getElementById('oral-date').value,
-            comment: document.getElementById('oral-comment').value
-        };
+        const newOralExam = { date: document.getElementById('oral-date').value, comment: document.getElementById('oral-comment').value };
         try {
             const studentDocRef = doc(db, "students", selectedStudentId);
             await updateDoc(studentDocRef, { oralExams: arrayUnion(newOralExam) });
@@ -188,25 +178,27 @@ function initializeAppLogic() {
 
     function updateStudentListView() {
         studentListDiv.innerHTML = '';
-        const lastNameFilter = searchLastname.value.toLowerCase().trim();
+        // --- **Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ** ---
+        const nameFilter = searchLastname.value.toLowerCase().trim(); // Το κείμενο αναζήτησης για το όνομα
         const classFilter = searchClass.value.toLowerCase().trim();
         
         const filteredStudents = students.filter(student => {
-            // --- **Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ** ---
-            // Ελέγχουμε αν η εγγραφή του μαθητή είναι έγκυρη πριν προσπαθήσουμε να την επεξεργαστούμε.
-            // Αν δεν υπάρχει όνομα (name), απλώς αγνοούμε αυτή την εγγραφή.
+            // Έλεγχος για έγκυρη εγγραφή
             if (typeof student.name !== 'string' || student.name.trim() === '') {
-                console.warn("Βρέθηκε μαθητής χωρίς όνομα, αγνοείται:", student.id);
                 return false;
             }
-            // --- **ΤΕΛΟΣ ΔΙΟΡΘΩΣΗΣ** ---
 
-            const lastName = student.name.split(' ').pop().toLowerCase();
+            const studentFullName = student.name.toLowerCase();
             const studentClass = student.class ? student.class.toLowerCase() : '';
-            const matchesLastname = !lastNameFilter || lastName.startsWith(lastNameFilter);
+
+            // Ελέγχουμε αν το πλήρες όνομα του μαθητή ΠΕΡΙΕΧΕΙ το κείμενο αναζήτησης
+            const matchesName = !nameFilter || studentFullName.includes(nameFilter);
+            // Ελέγχουμε αν το τμήμα του μαθητή ξεκινάει με το κείμενο αναζήτησης
             const matchesClass = !classFilter || studentClass.startsWith(classFilter);
-            return matchesLastname && matchesClass;
+            
+            return matchesName && matchesClass;
         });
+        // --- **ΤΕΛΟΣ ΔΙΟΡΘΩΣΗΣ** ---
 
         if (filteredStudents.length === 0) {
             studentListDiv.innerHTML = '<p>Δεν βρέθηκαν μαθητές/τριες.</p>';
